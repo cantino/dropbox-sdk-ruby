@@ -151,7 +151,7 @@ class DropboxFilesTest < Minitest::Test
 
   def test_list_folder
     stub_request(:post, url('files/list_folder')).to_return(stub('folder_contents'))
-    entries = @client.list_folder('/Homework/math')
+    entries, more, cursor = @client.list_folder('/Homework/math')
 
     assert_equal 2, entries.length
     assert entries[0].is_a?(Dropbox::FileMetadata)
@@ -159,11 +159,13 @@ class DropboxFilesTest < Minitest::Test
     assert_equal 7212, entries[0].size
     assert entries[1].is_a?(Dropbox::FolderMetadata)
     assert_equal 'math', entries[1].name
+    assert_equal false, more
+    assert_equal "ZtkX9_EHj3x7PMkVuFIhwKYXEpwpLwyxp9vMKomUhllil9q7eWiAu", cursor
   end
 
   def test_list_folder_empty
     stub_request(:post, url('files/list_folder')).to_return(stub('empty_folder_contents'))
-    entries = @client.list_folder('/empty_folder')
+    entries, more, cursor = @client.list_folder('/empty_folder')
 
     assert_equal 0, entries.length
   end

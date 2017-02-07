@@ -62,12 +62,14 @@ class DropboxIntegrationTest < Minitest::Test
     @client.move(moved.path_lower, folder.path_lower)
 
     cursor = @client.get_latest_list_folder_cursor(folder.path_lower)
-    entries = @client.list_folder(folder.path_lower)
+    entries, more, cursor = @client.list_folder(folder.path_lower)
     assert_equal 1, entries.length
     assert_instance_of Dropbox::FolderMetadata, entries[0]
+    assert_equal false, more
+    assert_instance_of String, cursor
 
     @client.create_folder(folder.path_lower + '/new_folder')
-    entries = @client.continue_list_folder(cursor)
+    entries, more, cursor = @client.continue_list_folder(cursor)
     assert_equal 1, entries.length
     assert_instance_of Dropbox::FolderMetadata, entries[0]
     assert_equal 'new_folder', entries[0].name

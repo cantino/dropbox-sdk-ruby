@@ -125,19 +125,37 @@ module Dropbox
     # Get the contents of a folder.
     #
     # @param [String] path
+    # @param [boolean] recursive
+    # @param [boolean] include_media_info
+    # @param [boolean] include_deleted
+    # @param [boolean] include_has_explicit_shared_members
+    #
     # @return [Array<Dropbox::Metadata>]
-    def list_folder(path)
-      resp = request('/files/list_folder', path: path)
-      resp['entries'].map { |e| parse_tagged_response(e) }
+    # @return [Boolean] has_more
+    # @return [String] cursor
+    def list_folder(path, recursive: false,
+                          include_media_info: false,
+                          include_deleted: false,
+                          include_has_explicit_shared_members: false  )
+      resp = request('/files/list_folder', path: path,
+                                           recursive: recursive,
+                                           include_media_info: include_media_info,
+                                           include_deleted: include_deleted,
+                                           include_has_explicit_shared_members: include_has_explicit_shared_members)
+      entries = resp['entries'].map { |e| parse_tagged_response(e) }
+      return entries, resp['has_more'], resp['cursor']
     end
 
     # Get the contents of a folder that are after a cursor.
     #
     # @param [String] cursor
     # @return [Array<Dropbox::Metadata>]
+    # @return [Boolean] has_more
+    # @return [String] cursor
     def continue_list_folder(cursor)
       resp = request('/files/list_folder/continue', cursor: cursor)
-      resp['entries'].map { |e| parse_tagged_response(e) }
+      entries = resp['entries'].map { |e| parse_tagged_response(e) }
+      return entries, resp['has_more'], resp['cursor']
     end
 
     # Get a cursor for a folder's current state.
