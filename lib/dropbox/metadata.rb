@@ -14,7 +14,7 @@ module Dropbox
 
   # Contains the metadata (but not contents) of a file.
   class FileMetadata < Metadata
-    attr_reader :id, :client_modified, :server_modified, :rev, :size
+    attr_reader :id, :client_modified, :server_modified, :rev, :size, :media_info
 
     def initialize(attrs={})
       @id = attrs.delete('id')
@@ -24,6 +24,16 @@ module Dropbox
       @server_modified = Time.parse(attrs.delete('server_modified'))
       @rev = attrs.delete('rev')
       @size = attrs.delete('size')
+      if attrs.has_key?('media_info') && attrs['media_info']['.tag'] == "metadata"
+        @media_info = case attrs['media_info']['metadata']['.tag']
+          when 'photo'
+            PhotoMetadata.new(attrs['media_info']['metadata'])
+          when 'video'
+            VideoMetadata.new(attrs['media_info']['metadata'])
+          else
+            raise ClientError.unknown_response_type(attrs['media_info']['metadata']['.tag'])
+        end
+      end
       super(attrs)
     end
 

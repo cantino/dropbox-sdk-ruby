@@ -22,6 +22,29 @@ class DropboxMetadataTest < Minitest::Test
     assert_equal 11, file.size
   end
 
+  def test_file_initialize_with_media_info
+    file = Dropbox::FileMetadata.new('id' => 'id:123', 'name' => 'file',
+      'path_lower' => '/folder/file', 'path_display' => '/folder/file',
+      'size' => 11, 'server_modified' => '2007-07-07T00:00:00Z', 
+      'media_info' => {
+        '.tag' => 'photo',
+        'metadata' => {
+          '.tag'=>'video',
+          'dimensions'=>{'height'=>720, 'width'=>960},
+          'location'=>{'latitude'=>40.9170, 'longitude'=>-74.10123},
+          'time_taken'=>'2017-01-29T19:58:19Z',
+          'duration'=>1234
+        }
+      })
+    assert_equal Dropbox::VideoInfo, file.media_info.class
+    assert_equal Time.parse('2017-01-29T19:58:19Z'), file.media_info.time_taken
+    assert_equal 1234, file.media_info.duration
+    assert_equal 40.9170, file.media_info.location.latitude
+    assert_equal -74.10123, file.media_info.location.longitude
+    assert_equal 720, file.media_info.dimensions.height
+    assert_equal 960, file.media_info.dimensions.width
+  end
+
   def test_folder_equality
     a = Dropbox::FolderMetadata.new('id' => 'id:123', 'name' => 'child',
       'path_lower' => '/parent/middle/child', 'path_display' => '/parent/middle/child')

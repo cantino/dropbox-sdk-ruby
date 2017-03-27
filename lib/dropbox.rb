@@ -2,6 +2,7 @@ require_relative 'dropbox/client'
 require_relative 'dropbox/errors'
 require_relative 'dropbox/account'
 require_relative 'dropbox/metadata'
+require_relative 'dropbox/media_info'
 require_relative 'dropbox/upload_session_cursor'
 
 # A small library for accessing the new Dropbox API. All of the Dropbox API
