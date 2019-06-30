@@ -84,9 +84,12 @@ module Dropbox
     # Get the metadata for a file or folder.
     #
     # @param [String] path
+    # @param [boolean] include_media_info
     # @return [Dropbox::Metadata]
-    def get_metadata(path)
-      resp = request('/files/get_metadata', path: path)
+    def get_metadata(path, include_media_info: false)
+      resp = request('/files/get_metadata',
+                     path: path,
+                     include_media_info: include_media_info)
       parse_tagged_response(resp)
     end
 
