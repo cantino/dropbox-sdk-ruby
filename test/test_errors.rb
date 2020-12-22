@@ -3,9 +3,6 @@ require 'http'
 
 class DropboxErrorTest < Minitest::Test
   def test_client_error
-    err = Dropbox::ClientError.invalid_access_token
-    assert_equal "Invalid access token", err.to_s
-
     err = Dropbox::ClientError.unknown_response_type('link')
     assert_equal "Unknown response type 'link'", err.to_s
   end

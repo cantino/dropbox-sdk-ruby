@@ -16,13 +16,4 @@ class DropboxClientTest < Minitest::Test
       Dropbox::Client.new(nil)
     end
   end
-
-  def test_invalid_access_token
-    dbx = Dropbox::Client.new('12345678' * 8)
-
-    stub_request(:post, url('auth/token/revoke')).to_return(error('invalid_token'))
-    assert_raises(Dropbox::ApiError) do
-      dbx.revoke_token
-    end
-  end
 end
